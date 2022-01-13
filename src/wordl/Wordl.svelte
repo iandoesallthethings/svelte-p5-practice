@@ -57,6 +57,7 @@
 					.join('')
 			)
 			.join('\n')
+			.trim()
 	}
 
 	function copyEmojiGrid() {
@@ -78,7 +79,7 @@
 			{/if}
 		</h1>
 
-		<div>{emojiGrid()}</div>
+		<div class="whitespace-pre-line">{emojiGrid()}</div>
 
 		<div>
 			<button on:click={copyEmojiGrid} class="p-2 rounded-md">Share</button>
@@ -94,11 +95,11 @@
 
 	<div slot="content">
 		<div>
-			Cheat?
 			<input type="checkbox" bind:checked={$cheat} />
+			Debug/Cheat Mode
 		</div>
 
-		<div>{emojiGrid()}</div>
+		<div class="whitespace-pre-line">{emojiGrid()}</div>
 		<button on:click={copyEmojiGrid} class="p-2 rounded-md">Share</button>
 	</div>
 </Modal>
