@@ -2,10 +2,13 @@
 	import Modal from '../Modal.svelte'
 	import Grid from './Grid.svelte'
 	import Keyboard from './Keyboard.svelte'
+	import Toggle from '../Toggle.svelte'
+	import EmojiGrid from './EmojiGrid.svelte'
+	import Stats from './Stats.svelte'
 
 	import answers from './answers'
 	import words from './words'
-	import cheat from './cheat'
+	import { cheat, stats } from '../stores'
 
 	const length = 5
 
@@ -35,34 +38,25 @@
 
 	function submit() {
 		error = ''
-		if (!guesses[turn].length === 5) return
+		if (guesses[turn].length < 5) return
 		if (!words.hasOwnProperty(guesses[turn])) return (error = 'Not in dictionary.')
 		turn++
-		if (turn === 6 || guesses[turn - 1] === word) {
-			gameOver = true
-			endGameOpen = true
-		}
+		if (guesses[turn - 1] === word) return victory()
+		if (turn === 6) return defeat()
 	}
 
-	function emojiGrid() {
-		return guesses
-			.map((guess) =>
-				guess
-					.split('')
-					.map((letter, letterIndex) => {
-						if (letter === word[letterIndex]) return '🟩'
-						else if (word.includes(letter)) return '🟨'
-						else return '⬛️'
-					})
-					.join('')
-			)
-			.join('\n')
-			.trim()
+	function victory() {
+		gameOver = true
+		endGameOpen = true
+		$stats.wins++
+		$stats.streak++
 	}
 
-	function copyEmojiGrid() {
-		navigator.clipboard.writeText(emojiGrid())
-		error = 'Copied to clipboard.'
+	function defeat() {
+		gameOver = true
+		endGameOpen = true
+		$stats.losses++
+		$stats.streak = 0
 	}
 
 	let endGameOpen = false
@@ -79,12 +73,8 @@
 			{/if}
 		</h1>
 
-		<div class="whitespace-pre-line">{emojiGrid()}</div>
-
-		<div>
-			<button on:click={copyEmojiGrid} class="p-2 rounded-md">Share</button>
-			<button on:click={reset} class="p-2 rounded-md">Play Again</button>
-		</div>
+		<EmojiGrid {guesses} {word} />
+		<button on:click={reset} class="p-2 rounded-md">Play Again</button>
 	</div>
 </Modal>
 
@@ -94,13 +84,10 @@
 	</div>
 
 	<div slot="content">
-		<div>
-			<input type="checkbox" bind:checked={$cheat} />
-			Debug/Cheat Mode
-		</div>
+		<h2>Settings</h2>
+		<Toggle store={cheat} label={'Debug/Cheat Mode'} />
 
-		<div class="whitespace-pre-line">{emojiGrid()}</div>
-		<button on:click={copyEmojiGrid} class="p-2 rounded-md">Share</button>
+		<Stats />
 	</div>
 </Modal>
 
@@ -108,11 +95,15 @@
 	Answer: {word}
 {/if}
 
-<Grid {length} {word} {turn} {guesses} />
-
 {error}
 
 {#if gameOver}
-	<button on:click={reset} class="p-2 rounded-md">Play Again</button>
+	<span>
+		<EmojiGrid {guesses} {word} showGrid={false} />
+		<button on:click={reset} class="p-2 rounded-md">Play Again</button>
+	</span>
 {/if}
+
+<Grid {length} {word} {turn} {guesses} />
+
 <Keyboard on:type={type} on:submit={submit} on:backspace={backspace} disabled={gameOver} />

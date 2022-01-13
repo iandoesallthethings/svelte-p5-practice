@@ -92,6 +92,6 @@
 	}
 
 	input {
-		@apply mx-2;
+		@apply mx-2 bg-transparent pl-2;
 	}
 </style>
