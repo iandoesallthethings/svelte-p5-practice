@@ -64,39 +64,44 @@
 		error = 'Copied to clipboard.'
 	}
 
-	let settingsOpen = false
 	let endGameOpen = false
-
 	let gameOver = false
 </script>
 
-<Modal open={settingsOpen}>
-	<span>
-		Cheat?
-		<input type="checkbox" bind:checked={$cheat} />
-	</span>
+<Modal show={endGameOpen}>
+	<div slot="content">
+		<h1>
+			{#if guesses[turn - 1] == word}
+				You win 🎉
+			{:else}
+				Yikes ❌
+			{/if}
+		</h1>
 
-	<button on:click={copyEmojiGrid} class="p-2 rounded-md">Share</button>
-</Modal>
+		<div>{emojiGrid()}</div>
 
-<Modal open={endGameOpen}>
-	<h1>
-		{#if guesses[turn - 1] == word}
-			You win 🎉
-		{:else}
-			Yikes ❌
-		{/if}
-	</h1>
-
-	<div>{emojiGrid()}</div>
-
-	<div>
-		<button on:click={copyEmojiGrid} class="p-2 rounded-md">Share</button>
-		<button on:click={reset} class="p-2 rounded-md">Play Again</button>
+		<div>
+			<button on:click={copyEmojiGrid} class="p-2 rounded-md">Share</button>
+			<button on:click={reset} class="p-2 rounded-md">Play Again</button>
+		</div>
 	</div>
 </Modal>
 
-<button on:click={() => (settingsOpen = true)} class="border-none">⚙️</button>
+<Modal>
+	<div slot="trigger" let:open>
+		<button on:click={open} class="border-none">⚙️</button>
+	</div>
+
+	<div slot="content">
+		<div>
+			Cheat?
+			<input type="checkbox" bind:checked={$cheat} />
+		</div>
+
+		<div>{emojiGrid()}</div>
+		<button on:click={copyEmojiGrid} class="p-2 rounded-md">Share</button>
+	</div>
+</Modal>
 
 {#if $cheat}
 	Answer: {word}
