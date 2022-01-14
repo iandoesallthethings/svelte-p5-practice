@@ -1,19 +1,19 @@
-export function shortcut (node, params) {
+export function shortcut(node, params) {
 	let handler
 
-	function checkModifiers (e: KeyboardEvent): boolean {
+	function checkModifiers(e) {
 		return !!params.alt != e.altKey || !!params.shift != e.shiftKey || !!params.control != (e.ctrlKey || e.metaKey) || params.key != e.key
 	}
 
-	function removeHandler () {
+	function removeHandler() {
 		window.removeEventListener('keydown', handler)
 	}
 
-	function setHandler () {
+	function setHandler() {
 		removeHandler()
 		if (!params) return
 
-		handler = function (e: KeyboardEvent) {
+		handler = function (e) {
 			if (checkModifiers(e)) return
 			e.preventDefault()
 			params.callback ? params.callback() : node.click()
