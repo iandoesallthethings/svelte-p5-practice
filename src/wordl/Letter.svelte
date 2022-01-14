@@ -19,6 +19,6 @@
 	afterUpdate(calculateBackground)
 </script>
 
-<div class="mx-2 py-2 w-12 rounded-md shadow-md capitalize {letter === '?' ? 'text-gray-300' : ''} {background} transition">
+<div class="mx-2 py-2 w-10 h-10 rounded-md shadow-md capitalize {letter === '?' ? 'text-gray-300' : ''} {background} transition">
 	{letter}
 </div>

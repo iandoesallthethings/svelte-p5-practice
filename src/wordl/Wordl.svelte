@@ -63,6 +63,19 @@
 	let gameOver = false
 </script>
 
+<Modal>
+	<div slot="trigger" let:open>
+		<button on:click={open} class="border-none">⚙️</button>
+	</div>
+
+	<div slot="content">
+		<h2>Settings</h2>
+		<Toggle store={cheat} label={'Debug/Cheat Mode'} />
+
+		<Stats />
+	</div>
+</Modal>
+
 <Modal show={endGameOpen}>
 	<div slot="content">
 		<h1>
@@ -75,19 +88,6 @@
 
 		<EmojiGrid {guesses} {word} />
 		<button on:click={reset} class="p-2 rounded-md">Play Again</button>
-	</div>
-</Modal>
-
-<Modal>
-	<div slot="trigger" let:open>
-		<button on:click={open} class="border-none">⚙️</button>
-	</div>
-
-	<div slot="content">
-		<h2>Settings</h2>
-		<Toggle store={cheat} label={'Debug/Cheat Mode'} />
-
-		<Stats />
 	</div>
 </Modal>
 

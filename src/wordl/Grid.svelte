@@ -13,7 +13,7 @@
 	{#each guesses as guess, guessIndex}
 		<div class="m-5 flex flex-row">
 			{#each cols as col}
-				<Letter {word} {turn} {guessIndex} letter={guess[col] || '?'} letterIndex={col} />
+				<Letter {word} {turn} {guessIndex} letter={guess[col] || ' '} letterIndex={col} />
 			{/each}
 		</div>
 	{/each}

@@ -12,12 +12,14 @@
 </script>
 
 <div id="theme" class={$darkMode ? 'dark' : ''}>
-	<main class="flex flex-col items-center dark:bg-gray-800 dark:text-gray-200 h-screen w-screen">
+	<main class="relative flex flex-col items-center dark:bg-gray-800 dark:text-gray-200 h-screen w-screen">
 		<h1>Bello {name}!</h1>
+		<div class="absolute right-0 top-0">
+			<Toggle store={darkMode} label={'Dark Mode'} />
+		</div>
 
 		<nav class="flex flex-col my-10">
-			<Toggle store={darkMode} label={'Dark Mode'} />
-			<h2>Demos:</h2>
+			<h3>Demos:</h3>
 			<span class="flex flex-row justify-between">
 				{#each demos as demo}
 					<label class="cursor-pointer mx-4">
@@ -40,7 +42,6 @@
 	main {
 		text-align: center;
 		padding: 1em;
-		max-width: 240px;
 		margin: 0 auto;
 	}
 
