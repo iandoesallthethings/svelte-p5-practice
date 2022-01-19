@@ -3,7 +3,7 @@
 	import Paint from './Paint.svelte'
 	import Wordl from './wordl/Wordl.svelte'
 	import Toggle from './Toggle.svelte'
-	import { darkMode } from './stores'
+	import { uiState } from './stores'
 
 	export let name
 
@@ -11,11 +11,11 @@
 	let currentDemo = demos[0]
 </script>
 
-<div id="theme" class={$darkMode ? 'dark' : ''}>
+<div id="theme" class={$uiState.darkMode ? 'dark' : ''}>
 	<main class="relative flex flex-col items-center dark:bg-gray-800 dark:text-gray-200 h-screen w-screen">
 		<h1>Bello {name}!</h1>
 		<div class="absolute right-0 top-0">
-			<Toggle store={darkMode} label={'Dark Mode'} />
+			<Toggle store={uiState} property={'darkMode'} label={'Dark Mode'} />
 		</div>
 
 		<nav class="flex flex-col my-10">

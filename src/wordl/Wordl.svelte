@@ -6,61 +6,83 @@
 	import EmojiGrid from './EmojiGrid.svelte'
 	import Stats from './Stats.svelte'
 
-	import answers from './answers'
 	import words from './words'
-	import { cheat, stats } from '../stores'
-
-	const length = 5
-
-	let turn = 0
-	let guesses = ['', '', '', '', '', '']
-	let error = ''
-	let word = answers[Math.floor(Math.random() * answers.length)]
+	import { stats, gameState, uiState } from '../stores'
 
 	function reset() {
-		gameOver = false
-		endGameOpen = false
-		turn = 0
-		guesses = ['', '', '', '', '', '']
-		error = ''
-		word = answers[Math.floor(Math.random() * answers.length)]
+		gameState.reset()
+		uiState.reset()
 	}
 
 	function type(e) {
-		error = ''
-		guesses[turn] = (guesses[turn] + e.detail.key).slice(0, 5)
+		$gameState.error = ''
+		$gameState.guesses[$gameState.turn] = ($gameState.guesses[$gameState.turn] + e.detail.key).slice(0, 5)
 	}
 
 	function backspace() {
-		error = ''
-		guesses[turn] = guesses[turn].slice(0, -1)
+		$gameState.error = ''
+		$gameState.guesses[$gameState.turn] = $gameState.guesses[$gameState.turn].slice(0, -1)
 	}
 
 	function submit() {
-		error = ''
-		if (guesses[turn].length < 5) return
-		if (!words.hasOwnProperty(guesses[turn])) return (error = 'Not in dictionary.')
-		turn++
-		if (guesses[turn - 1] === word) return victory()
-		if (turn === 6) return defeat()
+		$gameState.error = ''
+		if ($gameState.guesses[$gameState.turn].length < 5) return
+		if (!words.hasOwnProperty($gameState.guesses[$gameState.turn])) return ($gameState.error = 'Not in dictionary.')
+		$gameState.turn++
+		if ($gameState.guesses[$gameState.turn - 1] === $gameState.word) return victory()
+		if ($gameState.turn === 6) return defeat()
 	}
 
 	function victory() {
-		gameOver = true
-		endGameOpen = true
+		$gameState.gameOver = true
+		$uiState.endGameOpen = true
 		$stats.wins++
 		$stats.streak++
 	}
 
 	function defeat() {
-		gameOver = true
-		endGameOpen = true
+		$gameState.gameOver = true
+		$uiState.endGameOpen = true
 		$stats.losses++
 		$stats.streak = 0
 	}
 
-	let endGameOpen = false
-	let gameOver = false
+	function isInWord(letter, guess) {
+		return guess.includes(letter) && $gameState.word.includes(letter)
+	}
+
+	function isCorrect(letter, position) {
+		return $gameState.word[position] === letter
+	}
+
+	function isIncorrect(letter, guess) {
+		return guess.includes(letter) && !$gameState.word.includes(letter)
+	}
+
+	const colors = {
+		unguessed: () => `bg-gray-200 dark:bg-gray-600`,
+		incorrect: () => `bg-gray-300 dark:bg-gray-700`,
+		inWord: () => `bg-${$uiState.colorblindMode ? 'blue' : 'yellow'}-400 text-gray-800`,
+		correct: () => `bg-${$uiState.colorblindMode ? 'red' : 'green'}-400 text-gray-800`
+	}
+
+	function colorLetter(letter, options = { guess: '', position: -1, unguessed: false }) {
+		if (options.unguessed) return colors.unguessed()
+		else if (isCorrect(letter, options.position, options.guess)) return colors.correct()
+		else if (isInWord(letter, options.guess)) return colors.inWord()
+		else return colors.incorrect()
+	}
+
+	function colorKey(letter, override = false) {
+		let color = colors.unguessed()
+		if (override) return colors.unguessed()
+
+		for (let guess of $gameState.guesses) {
+			if (isInWord(letter, guess)) color = isCorrect(letter, guess.indexOf(letter)) ? colors.correct() : colors.inWord()
+			else if (isIncorrect(letter, guess)) color = colors.incorrect()
+		}
+		return color
+	}
 </script>
 
 <Modal>
@@ -70,40 +92,42 @@
 
 	<div slot="content">
 		<h2>Settings</h2>
-		<Toggle store={cheat} label={'Debug/Cheat Mode'} />
+		<Toggle store={uiState} property={'cheat'} label={'Debug/Cheat Mode'} />
+		<Toggle store={uiState} property={'colorblindMode'} label={'Colorblind Mode'} />
 
 		<Stats />
 	</div>
 </Modal>
 
-<Modal show={endGameOpen}>
+<Modal show={$uiState.endGameOpen}>
 	<div slot="content">
 		<h1>
-			{#if guesses[turn - 1] == word}
+			{#if $gameState.guesses[$gameState.turn - 1] == $gameState.word}
 				You win 🎉
 			{:else}
 				Yikes ❌
 			{/if}
 		</h1>
 
-		<EmojiGrid {guesses} {word} />
+		<EmojiGrid />
 		<button on:click={reset} class="p-2 rounded-md">Play Again</button>
 	</div>
 </Modal>
 
-{#if $cheat}
-	Answer: {word}
+{#if $uiState.cheat}
+	Answer: {$gameState.word}
+	<button on:click={reset} class="p-1">reset</button>
 {/if}
 
-{error}
+{$gameState.error}
 
-{#if gameOver}
+{#if $gameState.gameOver}
 	<span>
-		<EmojiGrid {guesses} {word} showGrid={false} />
+		<EmojiGrid showGrid={false} />
 		<button on:click={reset} class="p-2 rounded-md">Play Again</button>
 	</span>
 {/if}
 
-<Grid {length} {word} {turn} {guesses} />
+<Grid colorFunction={colorLetter} />
 
-<Keyboard on:type={type} on:submit={submit} on:backspace={backspace} disabled={gameOver} />
+<Keyboard on:type={type} on:submit={submit} on:backspace={backspace} disabled={$gameState.gameOver} colorFunction={colorKey} />

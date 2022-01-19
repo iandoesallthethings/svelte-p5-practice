@@ -1,19 +1,17 @@
 <script>
 	import Letter from './Letter.svelte'
+	import { gameState } from '../stores'
 
-	export let length
-	export let word
-	export let turn
-	export let guesses
+	export let colorFunction
 
-	const cols = [...Array(length).keys()]
+	const cols = [...Array($gameState.length).keys()]
 </script>
 
 <div class="m-5">
-	{#each guesses as guess, guessIndex}
+	{#each $gameState.guesses as guess, guessIndex}
 		<div class="m-5 flex flex-row">
 			{#each cols as col}
-				<Letter {word} {turn} {guessIndex} letter={guess[col] || ' '} letterIndex={col} />
+				<Letter letter={guess[col] || ''} color={colorFunction(guess[col], { guess, position: col, unguessed: $gameState.turn <= guessIndex })} />
 			{/each}
 		</div>
 	{/each}
