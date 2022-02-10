@@ -3,12 +3,18 @@
 	import Paint from './Paint.svelte'
 	import Wordl from './wordl/Wordl.svelte'
 	import Toggle from './Toggle.svelte'
+	import HistoryStore from './historyStore/HistoryStore.svelte'
 	import { uiState } from './stores'
 
 	export let name
 
-	let demos = [Wordl, Paint, EyeOfSauron]
-	let currentDemo = demos[0]
+	let demos = [Wordl, Paint, EyeOfSauron, HistoryStore]
+	// let currentDemo = demos[0]
+
+	function indexOfDemo(demo) {
+		const demoNames = demos.map((d) => d.name)
+		return demoNames.indexOf(demo.name)
+	}
 </script>
 
 <div id="theme" class={$uiState.darkMode ? 'dark' : ''}>
@@ -23,14 +29,14 @@
 			<span class="flex flex-row justify-between">
 				{#each demos as demo}
 					<label class="cursor-pointer mx-4">
-						<input type="radio" bind:group={currentDemo} value={demo} class="hidden" />
+						<input type="radio" bind:group={$uiState.currentDemo} value={indexOfDemo(demo)} class="hidden" />
 						<span class="p-1 peer-checked:border rounded-md"> {demo.name.match(/[A-Z][a-z]+|[0-9]+/g).join(' ')} </span>
 					</label>
 				{/each}
 			</span>
 		</nav>
 
-		<svelte:component this={currentDemo} />
+		<svelte:component this={demos[$uiState.currentDemo]} />
 	</main>
 </div>
 

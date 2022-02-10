@@ -1,7 +1,8 @@
-import localStore from './localStore'
+import localStore from './localStore.ts'
 import answers from './wordl/answers'
 
 const initialUiState = {
+	currentDemo: 0,
 	cheat: true,
 	darkMode: true,
 	colorblindMode: false,
