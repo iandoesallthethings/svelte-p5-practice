@@ -1,4 +1,7 @@
 <script>
+	// Made with help from lihautan
+	// https://www.youtube.com/watch?v=d2xsgavIDiQ
+
 	import { tweened } from 'svelte/motion'
 	import actionStore from './actionStore'
 	import snapshotStore from './snapshotStore'
