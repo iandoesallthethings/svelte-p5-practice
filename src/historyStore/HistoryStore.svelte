@@ -4,6 +4,7 @@
 	import snapshotStore from './snapshotStore'
 	import shortcut from '../shortcut'
 	import { round } from '../helpers'
+	import ArrayList from './ArrayList.svelte'
 
 	let value
 
@@ -15,14 +16,20 @@
 	}
 
 	const actionHistoryStore = actionStore(0, sumAction) // Or pass tweened as third argument
+	const actionHistory = actionHistoryStore.history
 
 	const snapshotHistoryStore = snapshotStore(0)
+	const numberHistory = snapshotHistoryStore.history
+
+	const objectHistoryStore = snapshotStore({ value: 0 })
+	const objectHistory = objectHistoryStore.history
 
 	function add() {
 		if (!value) return
 
 		actionHistoryStore.do(value)
 		$snapshotHistoryStore += value
+		$objectHistoryStore.value += value
 
 		value = null
 	}
@@ -30,11 +37,13 @@
 	function undo() {
 		actionHistoryStore.undo()
 		snapshotHistoryStore.undo()
+		objectHistoryStore.undo()
 	}
 
 	function redo() {
 		actionHistoryStore.redo()
 		snapshotHistoryStore.redo()
+		objectHistoryStore.redo()
 	}
 </script>
 
@@ -50,9 +59,16 @@
 	<div>
 		Tracking Actions:
 		<h1>{round($actionHistoryStore, 2)}</h1>
+		<ArrayList arr={$actionHistory} />
 	</div>
 	<div>
 		Tracking Snapshots:
 		<h1>{round($snapshotHistoryStore, 2)}</h1>
+		<ArrayList arr={$numberHistory} />
+	</div>
+	<div>
+		Snapshots with JSON Objects:
+		<h1>{round($objectHistoryStore.value, 2)}</h1>
+		<ArrayList arr={$objectHistory} />
 	</div>
 </div>

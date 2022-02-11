@@ -1,23 +1,31 @@
 import { writable, get } from 'svelte/store'
 
+function clone(object) {
+	return JSON.parse(JSON.stringify(object))
+}
+
 export default function snapshotStore(initialValue, storeType = writable) {
 	const store = storeType(initialValue)
 
-	const history = [get(store)]
+	const history = [clone(get(store))]
+	const historyStore = writable(history)
 	let historyIndex = 0
 
 	function setStoreToHistoryIndex() {
-		store.set(history[historyIndex])
+		store.set(clone(history[historyIndex]))
 	}
 
 	return {
-		subscribe: store.subscribe,
+		history: historyStore,
+		index: historyIndex,
 
+		subscribe: store.subscribe,
 		set(newValue) {
 			historyIndex++
 			history[historyIndex] = newValue
-			setStoreToHistoryIndex()
+			historyStore.set(history)
 			history.splice(historyIndex + 1)
+			setStoreToHistoryIndex()
 		},
 		undo() {
 			if (historyIndex < 1) return
