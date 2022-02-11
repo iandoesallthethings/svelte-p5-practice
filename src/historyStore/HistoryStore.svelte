@@ -24,15 +24,15 @@
 	const snapshotHistoryStore = snapshotStore(0)
 	const numberHistory = snapshotHistoryStore.history
 
-	const objectHistoryStore = snapshotStore({ value: 0 })
-	const objectHistory = objectHistoryStore.history
+	const objectSnapshotHistoryStore = snapshotStore({ value: 0 })
+	const objectHistory = objectSnapshotHistoryStore.history
 
 	function add() {
 		if (!value) return
 
 		actionHistoryStore.do(value)
 		$snapshotHistoryStore += value
-		$objectHistoryStore.value += value
+		$objectSnapshotHistoryStore.value += value
 
 		value = null
 	}
@@ -40,13 +40,13 @@
 	function undo() {
 		actionHistoryStore.undo()
 		snapshotHistoryStore.undo()
-		objectHistoryStore.undo()
+		objectSnapshotHistoryStore.undo()
 	}
 
 	function redo() {
 		actionHistoryStore.redo()
 		snapshotHistoryStore.redo()
-		objectHistoryStore.redo()
+		objectSnapshotHistoryStore.redo()
 	}
 </script>
 
@@ -71,7 +71,7 @@
 	</div>
 	<div>
 		Snapshots with JSON Objects:
-		<h1>{round($objectHistoryStore.value, 2)}</h1>
+		<h1>{round($objectSnapshotHistoryStore.value, 2)}</h1>
 		<ArrayList arr={$objectHistory} />
 	</div>
 </div>
