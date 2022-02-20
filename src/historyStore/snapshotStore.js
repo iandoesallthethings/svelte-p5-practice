@@ -10,6 +10,7 @@ export default function snapshotStore(initialValue, storeType = writable) {
 	const history = [clone(get(store))]
 	const historyStore = writable(history)
 	let historyIndex = 0
+	let historyIndexStore = writable(historyIndex)
 
 	function setStoreToHistoryIndex() {
 		store.set(clone(history[historyIndex]))
@@ -17,13 +18,14 @@ export default function snapshotStore(initialValue, storeType = writable) {
 
 	return {
 		history: historyStore,
-		index: historyIndex,
+		index: historyIndexStore,
 
 		subscribe: store.subscribe,
 		set(newValue) {
 			historyIndex++
 			history[historyIndex] = newValue
 			historyStore.set(history)
+			historyIndexStore.set(historyIndex)
 			history.splice(historyIndex + 1)
 			setStoreToHistoryIndex()
 		},
@@ -31,11 +33,13 @@ export default function snapshotStore(initialValue, storeType = writable) {
 			if (historyIndex < 1) return
 
 			historyIndex--
+			historyIndexStore.set(historyIndex)
 			setStoreToHistoryIndex()
 		},
 		redo() {
 			if (historyIndex >= history.length - 1) return
 			historyIndex++
+			historyIndexStore.set(historyIndex)
 			setStoreToHistoryIndex()
 		}
 	}

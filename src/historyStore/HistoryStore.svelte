@@ -20,12 +20,15 @@
 
 	const actionHistoryStore = actionStore(0, sumAction) // Or pass tweened as third argument
 	const actionHistory = actionHistoryStore.history
+	const actionIndex = actionHistoryStore.index
 
 	const snapshotHistoryStore = snapshotStore(0)
 	const numberHistory = snapshotHistoryStore.history
+	const numberIndex = snapshotHistoryStore.index
 
 	const objectSnapshotHistoryStore = snapshotStore({ value: 0 })
 	const objectHistory = objectSnapshotHistoryStore.history
+	const objectIndex = objectSnapshotHistoryStore.index
 
 	function add() {
 		if (!value) return
@@ -58,20 +61,28 @@
 	<button on:click={redo} use:shortcut={{ control: true, shift: true, code: 'KeyZ' }}>redo</button>
 </span>
 
-<div class="flex flex-row space-x-10 my-10 border border-gray-300 rounded-sm p-2">
-	<div>
-		Tracking Actions:
+<div class="flex flex-row space-x-10 my-10 border border-gray-300 rounded-sm p-2 justify-center divide-x">
+	<div class="column">
+		<h4>Tracking Actions:</h4>
 		<h1>{round($actionHistoryStore, 2)}</h1>
-		<ArrayList arr={$actionHistory} />
+		<ArrayList label="history" arr={$actionHistory} />
 	</div>
-	<div>
-		Tracking Snapshots:
+
+	<div class="column">
+		<h4>Tracking Snapshots:</h4>
 		<h1>{round($snapshotHistoryStore, 2)}</h1>
-		<ArrayList arr={$numberHistory} />
+		<ArrayList label="history" arr={$numberHistory} current={$numberIndex} />
 	</div>
-	<div>
-		Snapshots with JSON Objects:
+
+	<div class="column">
+		<h4>Tracking Snapshots with JSON Objects:</h4>
 		<h1>{round($objectSnapshotHistoryStore.value, 2)}</h1>
-		<ArrayList arr={$objectHistory} />
+		<ArrayList label="history" arr={$objectHistory} current={$objectIndex} />
 	</div>
 </div>
+
+<style>
+	.column {
+		@apply flex flex-col justify-items-center text-center;
+	}
+</style>

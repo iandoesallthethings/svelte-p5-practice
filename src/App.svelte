@@ -3,12 +3,13 @@
 	import Paint from './Paint.svelte'
 	import Wordl from './wordl/Wordl.svelte'
 	import Toggle from './Toggle.svelte'
+	import Unity from './Unity.svelte'
 	import HistoryStore from './historyStore/HistoryStore.svelte'
 	import { uiState } from './stores'
 
 	export let name
 
-	let demos = [Wordl, Paint, EyeOfSauron, HistoryStore]
+	let demos = [Wordl, Paint, EyeOfSauron, HistoryStore, Unity]
 	// let currentDemo = demos[0]
 
 	function indexOfDemo(demo) {
@@ -24,11 +25,11 @@
 			<Toggle store={uiState} property={'darkMode'} label={'Dark Mode'} />
 		</div>
 
-		<nav class="flex flex-col my-10">
-			<h3>Demos:</h3>
-			<span class="flex flex-row justify-between">
+		<nav class="flex flex-col my-2">
+			<span class="flex flex-row items-center justify-between overflow-x-scroll">
+				<h3>Demos:</h3>
 				{#each demos as demo}
-					<label class="cursor-pointer mx-4">
+					<label class="cursor-pointer mx-2 whitespace-nowrap flex items-center">
 						<input type="radio" bind:group={$uiState.currentDemo} value={indexOfDemo(demo)} class="hidden" />
 						<span class="p-1 peer-checked:border rounded-md"> {demo.name.match(/[A-Z][a-z]+|[0-9]+/g).join(' ')} </span>
 					</label>
@@ -54,7 +55,7 @@
 	h1 {
 		color: #ff3e00;
 		text-transform: uppercase;
-		font-size: 4em;
+		font-size: 3.5em;
 		font-weight: 100;
 	}
 	h2 {
@@ -67,6 +68,11 @@
 		color: #ff3e00;
 		text-transform: uppercase;
 		font-size: 2em;
+		font-weight: 100;
+	}
+	h4 {
+		color: #ff3e00;
+		font-size: 1.5em;
 		font-weight: 100;
 	}
 
